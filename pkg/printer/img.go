@@ -8,6 +8,8 @@ import (
 
 const (
 	PrintWidth = 384
+
+	feedPaper = 15
 )
 
 func encodeRunLenRepetition(n uint, val bool) []int8 {
@@ -148,7 +150,7 @@ func cmdsImg(img image.Image) ([]byte, error) {
 	return ret, nil
 }
 
-func cmdsPrint(img image.Image, darkMode bool) ([]byte, error) {
+func cmdsPrint(img image.Image, textMode bool) ([]byte, error) {
 	imgCmds, err := cmdsImg(img)
 	if err != nil {
 		return nil, err
@@ -158,7 +160,7 @@ func cmdsPrint(img image.Image, darkMode bool) ([]byte, error) {
 
 	ret = append(ret, cmdGetDevState...)
 	ret = append(ret, cmdSetQuality200DPI...)
-	if darkMode {
+	if textMode {
 		ret = append(ret, cmdPrintText...)
 	} else {
 		ret = append(ret, cmdPrintImg...)
@@ -167,7 +169,7 @@ func cmdsPrint(img image.Image, darkMode bool) ([]byte, error) {
 
 	ret = append(ret, imgCmds...)
 
-	ret = append(ret, cmdFeedPaper(25)...)
+	ret = append(ret, cmdFeedPaper(feedPaper)...)
 	ret = append(ret, cmdSetPaper...)
 	ret = append(ret, cmdSetPaper...)
 	ret = append(ret, cmdSetPaper...)

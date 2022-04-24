@@ -19,6 +19,7 @@ const (
 	printerCharacteristicUUID = 0xAE01
 )
 
+// FindOptions represents options for device discovery.
 type FindOptions struct {
 	// bluetooth device name, ignored if empty
 	Name string
@@ -26,6 +27,7 @@ type FindOptions struct {
 	Address string
 }
 
+// DefaultFindOptions represents the default discovery options.
 var DefaultFindOptions = FindOptions{}
 
 type Printer struct {
@@ -36,6 +38,9 @@ type Printer struct {
 	printerChar *ble.Characteristic
 }
 
+// Find finds a BLE printer and connects to it.
+// Use ctx for timeout.
+// Close() after usage.
 func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
 	filter := func(adv ble.Advertisement) bool {
 		logger := log.With().
@@ -112,6 +117,7 @@ func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
 	}, nil
 }
 
+// Close closes the connection.
 func (p *Printer) Close() {
 	log.Debug().Msg("Close()")
 
@@ -134,6 +140,8 @@ func chunkifyBytes(b []byte, sz int) [][]byte {
 	return chunks
 }
 
+// Print prints an image.
+// You may pass it through PrepareImage() beforehand.
 func (p *Printer) Print(ctx context.Context, img image.Image, darkMode bool) error {
 	cmds, err := cmdsPrint(img, darkMode)
 	if err != nil {

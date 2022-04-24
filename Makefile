@@ -1,22 +1,24 @@
-.PHONY: build run test format lint check
+.PHONY: build run help test format lint check
 
 build:
 	go build -o catprint ./cmd/catprint/main.go
 
 run: build
 	sudo ./catprint \
-		--log-level=trace \
+		--log-level=info \
 		--hci-device 0 \
 		--timeout 10s \
-		--no-scale \
-		--no-dither \
+		--threshold \
 		pkg/printer/testdata/test.png
 	
 	sudo ./catprint \
-		--log-level=trace \
+		--log-level=info \
 		--hci-device 0 \
 		--timeout 10s \
 		pkg/printer/testdata/swan.jpg
+
+help: build
+	./catprint --help
 
 test:
 	go test -v -race ./...
