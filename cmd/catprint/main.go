@@ -9,10 +9,12 @@ import (
 	"github.com/alexflint/go-arg"
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/linux"
-	"github.com/jo-m/goprint/pkg/printer"
+	"github.com/jo-m/gocatprint/pkg/printer"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	_ "image/gif"
+	_ "image/jpeg"
 	_ "image/png"
 )
 
@@ -91,13 +93,17 @@ func main() {
 	setupLogging(f)
 	log.Debug().Interface("flags", f).Msg("flags")
 
+	log.Info().Msg("loading image..")
 	img := mustReadImage(f.Image)
 
+	log.Info().Msg("connecting to printer..")
 	printer := mustFindPrinter(f)
 	defer printer.Close()
 
+	log.Info().Msg("printing..")
 	err := printer.Print(context.Background(), img, f.DarkMode)
 	if err != nil {
 		log.Panic().Err(err).Send()
 	}
+	log.Info().Msg("done.")
 }

@@ -1,14 +1,13 @@
 .PHONY: build run test format lint check
 
 build:
-	go build -o print ./cmd/print/main.go
+	go build -o catprint ./cmd/catprint/main.go
 
 run: build
-	sudo setcap 'cap_net_raw,cap_net_admin+eip' print
-	sudo ./print \
-		--log-level=info \
-		--hci-device 2 \
-		--printer-name GB03 \
+	sudo ./catprint \
+		--log-level=trace \
+		--hci-device 0 \
+		--timeout 10s \
 		pkg/printer/testdata/test.png
 
 test:

@@ -1,4 +1,4 @@
-module github.com/jo-m/goprint
+module github.com/jo-m/gocatprint
 
 go 1.18
 
