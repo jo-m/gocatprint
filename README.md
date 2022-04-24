@@ -3,6 +3,10 @@
 Go library to print images on Aliexpress Cat thermo paper printers.
 A test binary is included as well.
 
+![Demo](demo.jpg)
+
+Ported to Go from <https://github.com/rbaron/catprinter>.
+
 ```
 $ make build
 $ ./catprint --help
@@ -25,7 +29,3 @@ Options:
   --preview IMG-FILE     do not print, just write the (processed) image to the given file
   --help, -h             display this help and exit
 ```
-
-Ported to Go from <https://github.com/rbaron/catprinter>.
-
-![Demo](demo.jpg)
