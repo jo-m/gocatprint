@@ -23,6 +23,9 @@ type flags struct {
 	Timeout        time.Duration `arg:"-t,--timeout" default:"10s" help:"how long to allow for discovery and printing" placeholder:"DUR"`
 	PrinterName    string        `arg:"--printer-name" default:"" help:"device name to connect to, ignored if empty" placeholder:"NAME"`
 	PrinterAddress string        `arg:"--printer-address" default:"" help:"device address to connect to, ignored if empty" placeholder:"ADDR"`
+
+	Image    string `arg:"positional,required"  help:"image to print, PNG or JPEG, must be 384 px wide" placeholder:"IMG"`
+	DarkMode bool   `arg:"--dark-mode" default:"true" help:"more contrast, slower speed"`
 }
 
 func setupLogging(f flags) {
