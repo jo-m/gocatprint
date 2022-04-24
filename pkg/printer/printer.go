@@ -85,14 +85,14 @@ func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
 		}
 
 		if opts.Name != "" {
-			if strings.ToUpper(adv.LocalName()) != strings.ToUpper(opts.Name) {
+			if !strings.EqualFold(adv.LocalName(), opts.Name) {
 				logger.Trace().Msg("name mismatch")
 				return false
 			}
 		}
 
 		if opts.Address != "" {
-			if strings.ToUpper(adv.Addr().String()) != strings.ToUpper(opts.Address) {
+			if !strings.EqualFold(adv.Addr().String(), opts.Address) {
 				logger.Trace().Msg("address mismatch")
 				return false
 			}

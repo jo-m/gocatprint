@@ -5,7 +5,6 @@ import "strconv"
 var (
 	cmdGetDevState      = bs([]int8{81, 120, -93, 0, 1, 0, 0, 0, -1})
 	cmdSetQuality200DPI = bs([]int8{81, 120, -92, 0, 1, 0, 50, -98, -1})
-	cmdGetDevInfo       = bs([]int8{81, 120, -88, 0, 1, 0, 0, 0, -1})
 	cmdLatticeStart     = bs([]int8{81, 120, -90, 0, 11, 0, -86, 85, 23, 56, 68, 95, 95, 95, 68, 56, 44, -95, -1})
 	cmdLatticeEnd       = bs([]int8{81, 120, -90, 0, 11, 0, -86, 85, 23, 0, 0, 0, 0, 0, 0, 0, 23, 17, -1})
 	cmdSetPaper         = bs([]int8{81, 120, -95, 0, 2, 0, 48, 0, -7, -1})

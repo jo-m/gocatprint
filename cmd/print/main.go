@@ -41,6 +41,21 @@ func setupLogging(f flags) {
 	log.Logger = log.Logger.Level(level).With().Timestamp().Caller().Logger()
 }
 
+func mustReadImage(path string) image.Image {
+	f, err := os.Open(path)
+	if err != nil {
+		log.Panic().Err(err).Msg("could not open image")
+	}
+	defer f.Close()
+
+	data, _, err := image.Decode(f)
+	if err != nil {
+		log.Panic().Err(err).Msg("could not parse image")
+	}
+
+	return data
+}
+
 func mustSetDefaultDevice() {
 	dev, err := linux.NewDevice()
 	if err != nil {
@@ -50,32 +65,7 @@ func mustSetDefaultDevice() {
 	ble.SetDefaultDevice(dev)
 }
 
-func mustReadImage(path string) image.Image {
-	f, err := os.Open(path)
-	if err != nil {
-		log.Panic().Err(err).Msg("could not open image")
-	}
-	defer f.Close()
-
-	data, _, err := image.Decode(f)
-
-	return data
-}
-
-func main() {
-	f := flags{}
-	err := arg.Parse(&f)
-	if err != nil {
-		log.Panic().Err(err).Send()
-	}
-
-	setupLogging(f)
-
-	log.Debug().Interface("flags", f).Msg("flags")
-
-	img := mustReadImage("pkg/printer/testdata/test.png")
-
-	// TODO
+func mustFindPrinter(f flags) *printer.Printer {
 	mustSetDefaultDevice()
 
 	ctx, cancel := context.WithTimeout(context.Background(), f.Timeout)
@@ -85,13 +75,27 @@ func main() {
 		Name:    f.PrinterName,
 		Address: f.PrinterAddress,
 	}
+
 	printer, err := printer.Find(ctx, opts)
 	if err != nil {
 		log.Panic().Err(err).Send()
 	}
+
+	return printer
+}
+
+func main() {
+	f := flags{}
+	arg.MustParse(&f)
+	setupLogging(f)
+	log.Debug().Interface("flags", f).Msg("flags")
+
+	img := mustReadImage(f.Image)
+
+	printer := mustFindPrinter(f)
 	defer printer.Close()
 
-	printer.Print(ctx, img, true)
+	err := printer.Print(context.Background(), img, f.DarkMode)
 	if err != nil {
 		log.Panic().Err(err).Send()
 	}
