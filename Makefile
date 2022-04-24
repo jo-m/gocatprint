@@ -2,10 +2,14 @@
 
 build:
 	go build -o print ./cmd/print/main.go
-	sudo setcap 'cap_net_raw,cap_net_admin+eip' print
 
 run: build
-	./print --log-level=trace pkg/printer/testdata/test.png
+	sudo setcap 'cap_net_raw,cap_net_admin+eip' print
+	sudo ./print \
+		--log-level=info \
+		--hci-device 2 \
+		--printer-name GB03 \
+		pkg/printer/testdata/test.png
 
 test:
 	go test -v -race ./...

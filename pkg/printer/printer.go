@@ -29,44 +29,11 @@ type FindOptions struct {
 var DefaultFindOptions = FindOptions{}
 
 type Printer struct {
-	client ble.Client
-	char   *ble.Characteristic
-}
+	client  ble.Client
+	profile *ble.Profile
 
-func findCharacteristic(client ble.Client) (*ble.Characteristic, error) {
-	log.Debug().Msg("discovering services")
-
-	svcs, err := client.DiscoverServices(nil)
-	if err != nil {
-		return nil, err
-	}
-	for _, s := range svcs {
-		logger := log.With().Str("svcUuid", s.UUID.String()).Logger()
-		logger.Debug().Msg("found service")
-
-		if !s.UUID.Equal(ble.UUID16(printerServiceUUID)) {
-			logger.Trace().Msg("no match")
-			continue
-		}
-
-		chars, err := client.DiscoverCharacteristics(nil, s)
-		if err != nil {
-			return nil, err
-		}
-		for _, c := range chars {
-			logger.Trace().Str("charUuid", c.UUID.String()).Msg("found characteristic")
-
-			if !c.UUID.Equal(ble.UUID16(printerCharacteristicUUID)) {
-				logger.Trace().Msg("no match")
-				continue
-			}
-
-			logger.Debug().Msg("found")
-			return c, nil
-		}
-	}
-
-	return nil, errors.New("characteristic not found")
+	printerSvc  *ble.Service
+	printerChar *ble.Characteristic
 }
 
 func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
@@ -116,17 +83,32 @@ func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
 		return nil, err
 	}
 
-	log.Info().Str("addr", client.Addr().String()).Msg("connected")
+	log.Debug().Str("addr", client.Addr().String()).Msg("connected")
 
-	char, err := findCharacteristic(client)
+	profile, err := client.DiscoverProfile(true)
 	if err != nil {
 		client.CancelConnection()
 		return nil, err
 	}
 
+	printerSvc := profile.FindService(ble.NewService(ble.UUID16(printerServiceUUID)))
+	if printerSvc == nil {
+		client.CancelConnection()
+		return nil, errors.New("printer service not found")
+	}
+
+	printerChar := profile.FindCharacteristic(ble.NewCharacteristic(ble.UUID16(printerCharacteristicUUID)))
+	if printerChar == nil {
+		client.CancelConnection()
+		return nil, errors.New("printer characteristic not found")
+	}
+
 	return &Printer{
-		client: client,
-		char:   char,
+		client:  client,
+		profile: profile,
+
+		printerSvc:  printerSvc,
+		printerChar: printerChar,
 	}, nil
 }
 
@@ -168,32 +150,16 @@ func (p *Printer) Print(ctx context.Context, img image.Image, darkMode bool) err
 	defer gattC.CancelConnection()
 	gattC.Conn().SetContext(ctx)
 
-	// fmt.Println(gattC.Addr())
-	// fmt.Println(gattC.DiscoverCharacteristics())
-	// fmt.Println(gattC.DiscoverProfile(true))
-
-	// return nil
-
-	// TODO subscribe
-	// err = gattC.Subscribe(nil, false, func(req []byte) {
-	// 	log.Info().Msg("received sub")
-	// })
-	// if err != nil {
-	// 	return err
-	// }
-
-	// return nil
-
 	for _, b := range chunks {
 		log.Trace().Int("len", len(b)).Msg("writing chunk")
-		err = gattC.WriteCharacteristic(p.char, b, true)
+		err = gattC.WriteCharacteristic(p.printerChar, b, true)
 		if err != nil {
 			return err
 		}
 	}
 
-	// TODO fix hack
-	time.Sleep(time.Second * 5)
+	// TODO hack: try to sleep for as long as printing goes on
+	time.Sleep(time.Millisecond*17*time.Duration(img.Bounds().Dy()) + time.Second)
 
 	return nil
 }
