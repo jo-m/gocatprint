@@ -27,3 +27,5 @@ Options:
 ```
 
 Ported to Go from <https://github.com/rbaron/catprinter>.
+
+![Demo](demo.jpg)
