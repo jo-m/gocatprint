@@ -3,19 +3,23 @@ package main
 import (
 	"context"
 	"image"
+	"image/color"
+	"image/png"
 	"os"
 	"time"
+
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 
 	"github.com/alexflint/go-arg"
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/linux"
 	"github.com/jo-m/gocatprint/pkg/printer"
+	"github.com/makeworld-the-better-one/dither/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-
-	_ "image/gif"
-	_ "image/jpeg"
-	_ "image/png"
+	"golang.org/x/image/draw"
 )
 
 type flags struct {
@@ -28,7 +32,10 @@ type flags struct {
 	PrinterAddress string        `arg:"--printer-address" default:"" help:"device address to connect to, ignored if empty" placeholder:"ADDR"`
 
 	DarkMode bool   `arg:"--dark-mode" default:"true" help:"more contrast, slower speed"`
-	Image    string `arg:"positional,required"  help:"image to print, PNG or JPEG, must be 384 px wide" placeholder:"IMG"`
+	NoScale  bool   `arg:"--no-scale" default:"false" help:"do not scale input image, must be provided with 384px width"`
+	NoDither bool   `arg:"--no-dither" default:"false" help:"do not apply dithering to the image, use simple thresholding instead"`
+	Preview  string `arg:"--preview" default:"" help:"do not print, just write the (processed) image to the given file" placeholder:"IMG-FILE"`
+	Image    string `arg:"positional,required"  help:"image to print, PNG or JPEG, must be 384px wide (unless --scale is passed)" placeholder:"IMG-FILE"`
 }
 
 func setupLogging(f flags) {
@@ -42,21 +49,6 @@ func setupLogging(f flags) {
 	}
 
 	log.Logger = log.Logger.Level(level).With().Timestamp().Caller().Logger()
-}
-
-func mustReadImage(path string) image.Image {
-	f, err := os.Open(path)
-	if err != nil {
-		log.Panic().Err(err).Msg("could not open image")
-	}
-	defer f.Close()
-
-	data, _, err := image.Decode(f)
-	if err != nil {
-		log.Panic().Err(err).Msg("could not parse image")
-	}
-
-	return data
 }
 
 func mustSetDefaultDevice(f flags) {
@@ -87,14 +79,82 @@ func mustFindPrinter(f flags) *printer.Printer {
 	return printer
 }
 
+func mustPrepareImage(f flags) image.Image {
+	file, err := os.Open(f.Image)
+	if err != nil {
+		log.Panic().Err(err).Msg("could not open image")
+	}
+	defer file.Close()
+
+	img, _, err := image.Decode(file)
+	if err != nil {
+		log.Panic().Err(err).Msg("could not parse image")
+	}
+
+	if !f.NoScale {
+		ratio := float64(printer.PrintWidth) / float64(img.Bounds().Max.X)
+
+		scaled := image.NewRGBA(image.Rect(0, 0, printer.PrintWidth, int(ratio*float64(img.Bounds().Max.Y))))
+		draw.BiLinear.Scale(scaled, scaled.Rect, img, img.Bounds(), draw.Over, nil)
+
+		img = scaled
+	}
+
+	gray := image.NewGray(img.Bounds())
+	draw.Draw(gray, gray.Bounds(), img, img.Bounds().Min, draw.Src)
+	img = gray
+
+	if !f.NoDither {
+		// dither
+		palette := []color.Color{
+			color.Black,
+			color.White,
+		}
+
+		d := dither.NewDitherer(palette)
+		d.Matrix = dither.FloydSteinberg
+
+		img = d.Dither(img)
+	} else {
+		// simple thresholding
+		access := img.(*image.Gray)
+		for y := 0; y < img.Bounds().Dy(); y++ {
+			for x := 0; x < img.Bounds().Dx(); x++ {
+				if access.GrayAt(x, y).Y > 127 {
+					access.Set(x, y, color.White)
+				} else {
+					access.Set(x, y, color.Black)
+				}
+			}
+		}
+	}
+
+	return img
+}
+
 func main() {
 	f := flags{}
 	arg.MustParse(&f)
 	setupLogging(f)
 	log.Debug().Interface("flags", f).Msg("flags")
 
-	log.Info().Msg("loading image..")
-	img := mustReadImage(f.Image)
+	log.Info().Msg("loading & preparing image..")
+	img := mustPrepareImage(f)
+
+	if f.Preview != "" {
+		out, err := os.Create(f.Preview)
+		if err != nil {
+			log.Panic().Err(err).Send()
+		}
+
+		log.Info().Msg("writing image..")
+		err = png.Encode(out, img)
+		if err != nil {
+			log.Panic().Err(err).Send()
+		}
+		log.Info().Msg("done.")
+		return
+	}
 
 	log.Info().Msg("connecting to printer..")
 	printer := mustFindPrinter(f)

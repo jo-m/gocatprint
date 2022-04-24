@@ -6,11 +6,10 @@ A test binary is included as well.
 ```
 $ make build
 $ ./catprint --help
-
-Usage: catprint [--log-pretty] [--log-level LEVEL] [--hci-device N] [--timeout DUR] [--printer-name NAME] [--printer-address ADDR] [--dark-mode] IMG
+Usage: catprint [--log-pretty] [--log-level LEVEL] [--hci-device N] [--timeout DUR] [--printer-name NAME] [--printer-address ADDR] [--dark-mode] [--no-scale] [--no-dither] [--preview IMG-FILE] IMG-FILE
 
 Positional arguments:
-  IMG                    image to print, PNG or JPEG, must be 384 px wide
+  IMG-FILE               image to print, PNG or JPEG, must be 384px wide (unless --scale is passed)
 
 Options:
   --log-pretty           log pretty [default: true]
@@ -21,6 +20,9 @@ Options:
   --printer-address ADDR
                          device address to connect to, ignored if empty
   --dark-mode            more contrast, slower speed [default: true]
+  --no-scale             do not scale input image, must be provided with 384px width [default: false]
+  --no-dither            do not apply dithering to the image, use simple thresholding instead [default: false]
+  --preview IMG-FILE     do not print, just write the (processed) image to the given file
   --help, -h             display this help and exit
 ```
 

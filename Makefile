@@ -8,7 +8,15 @@ run: build
 		--log-level=trace \
 		--hci-device 0 \
 		--timeout 10s \
+		--no-scale \
+		--no-dither \
 		pkg/printer/testdata/test.png
+	
+	sudo ./catprint \
+		--log-level=trace \
+		--hci-device 0 \
+		--timeout 10s \
+		pkg/printer/testdata/swan.jpg
 
 test:
 	go test -v -race ./...
