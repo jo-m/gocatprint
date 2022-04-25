@@ -22,15 +22,15 @@ type flags struct {
 	LogPretty bool   `arg:"--log-pretty" default:"true" help:"log pretty"`
 	LogLevel  string `arg:"--log-level" default:"info" help:"log level" placeholder:"LEVEL"`
 
-	HCIDevice      int           `arg:"--hci-device" default:"0" help:"HCI device to use" placeholder:"N"`
+	HCIDevice      int           `arg:"--hci-device" default:"-1" help:"HCI device to use, auto if negative" placeholder:"N"`
 	Timeout        time.Duration `arg:"--timeout" default:"10s" help:"how long to allow for discovery and printing" placeholder:"DUR"`
 	PrinterName    string        `arg:"--printer-name" default:"" help:"device name to connect to, ignored if empty" placeholder:"NAME"`
 	PrinterAddress string        `arg:"--printer-address" default:"" help:"device address to connect to, ignored if empty" placeholder:"ADDR"`
 
 	FastMode  bool   `arg:"--fast-mode" default:"false" help:"less contrast, higher printer speed"`
 	Threshold bool   `arg:"--threshold" default:"false" help:"use simple thresholding instead of dithering"`
-	Preview   string `arg:"--preview" default:"" help:"do not print, just write the (processed) image to the given file" placeholder:"IMG-FILE"`
-	Image     string `arg:"positional,required"  help:"image to print, PNG or JPEG, must be 384px wide (unless --scale is passed)" placeholder:"IMG-FILE"`
+	Preview   string `arg:"--preview" default:"" help:"do not print, just write the (processed) image to the given file" placeholder:"OUT-FILE"`
+	Image     string `arg:"positional,required"  help:"image to print, PNG or JPEG, must be 384px wide (unless --scale is passed)" placeholder:"IN-FILE"`
 }
 
 func mustSetupLogging(f flags) {
@@ -47,12 +47,26 @@ func mustSetupLogging(f flags) {
 }
 
 func mustSetDefaultDevice(f flags) {
-	dev, err := linux.NewDevice(ble.OptDeviceID(f.HCIDevice))
-	if err != nil {
-		log.Panic().Err(err).Msg("cannot instantiate new device")
+	if f.HCIDevice >= 0 {
+		dev, err := linux.NewDevice(ble.OptDeviceID(f.HCIDevice))
+		if err != nil {
+			log.Panic().Err(err).Msg("cannot instantiate new device")
+		}
+
+		log.Debug().Msg("setting default ble device")
+		ble.SetDefaultDevice(dev)
+		return
 	}
-	log.Debug().Msg("setting default ble device")
-	ble.SetDefaultDevice(dev)
+
+	for i := 0; i < 10; i++ {
+		dev, err := linux.NewDevice(ble.OptDeviceID(i))
+		if err == nil {
+			ble.SetDefaultDevice(dev)
+			return
+		}
+	}
+
+	log.Panic().Msg("could not find a HCI device")
 }
 
 func mustFindPrinter(f flags) *printer.Printer {

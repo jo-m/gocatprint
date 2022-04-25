@@ -2,18 +2,17 @@
 
 build:
 	go build -o catprint ./cmd/catprint/main.go
+	go build -o catprintsimple ./cmd/catprintsimple/main.go
 
 run: build
 	sudo ./catprint \
 		--log-level=info \
-		--hci-device 0 \
 		--timeout 10s \
 		--threshold \
 		pkg/printer/testdata/test.png
 	
 	sudo ./catprint \
 		--log-level=info \
-		--hci-device 0 \
 		--timeout 10s \
 		pkg/printer/testdata/swan.jpg
 
