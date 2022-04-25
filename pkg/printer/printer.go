@@ -142,8 +142,8 @@ func chunkifyBytes(b []byte, sz int) [][]byte {
 
 // Print prints an image.
 // You may pass it through PrepareImage() beforehand.
-func (p *Printer) Print(ctx context.Context, img image.Image, darkMode bool) error {
-	cmds, err := cmdsPrint(img, darkMode)
+func (p *Printer) Print(ctx context.Context, img image.Image) error {
+	cmds, err := cmdsPrint(img)
 	if err != nil {
 		return err
 	}

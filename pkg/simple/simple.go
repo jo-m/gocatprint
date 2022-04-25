@@ -29,8 +29,7 @@ func setBleDefaultDevice() error {
 
 // Print tries to print the give image via the first Bluetooth device found.
 // If threshold is true, simple thresholding is used instead of dithering.
-// If fastMode is true, a faster printing mode resulting in less contast is used.
-func Print(img image.Image, threshold, fastMode bool) error {
+func Print(img image.Image, threshold bool) error {
 	img = printer.PrepareImage(img, threshold)
 
 	err := setBleDefaultDevice()
@@ -47,5 +46,5 @@ func Print(img image.Image, threshold, fastMode bool) error {
 	}
 	defer printer.Close()
 
-	return printer.Print(context.Background(), img, !fastMode)
+	return printer.Print(context.Background(), img)
 }

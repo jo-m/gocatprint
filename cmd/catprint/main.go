@@ -27,7 +27,6 @@ type flags struct {
 	PrinterName    string        `arg:"--printer-name" default:"" help:"device name to connect to, ignored if empty" placeholder:"NAME"`
 	PrinterAddress string        `arg:"--printer-address" default:"" help:"device address to connect to, ignored if empty" placeholder:"ADDR"`
 
-	FastMode  bool   `arg:"--fast-mode" default:"false" help:"less contrast, higher printer speed"`
 	Threshold bool   `arg:"--threshold" default:"false" help:"use simple thresholding instead of dithering"`
 	Preview   string `arg:"--preview" default:"" help:"do not print, just write the (processed) image to the given file" placeholder:"OUT-FILE"`
 	Image     string `arg:"positional,required"  help:"image to print, PNG or JPEG, must be 384px wide (unless --scale is passed)" placeholder:"IN-FILE"`
@@ -133,7 +132,7 @@ func main() {
 	defer printer.Close()
 
 	log.Info().Msg("printing..")
-	err := printer.Print(context.Background(), img, !f.FastMode)
+	err := printer.Print(context.Background(), img)
 	if err != nil {
 		log.Panic().Err(err).Send()
 	}

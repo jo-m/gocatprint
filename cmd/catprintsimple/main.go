@@ -36,7 +36,7 @@ func main() {
 		panic(err)
 	}
 
-	err = simple.Print(img, false, false)
+	err = simple.Print(img, false)
 	if err != nil {
 		panic(err)
 	}
