@@ -33,7 +33,7 @@ type flags struct {
 	Image     string `arg:"positional,required"  help:"image to print, PNG or JPEG, must be 384px wide (unless --scale is passed)" placeholder:"IMG-FILE"`
 }
 
-func setupLogging(f flags) {
+func mustSetupLogging(f flags) {
 	level, err := zerolog.ParseLevel(f.LogLevel)
 	if err != nil {
 		log.Panic().Err(err).Send()
@@ -92,7 +92,7 @@ func mustLoadImage(path string) image.Image {
 func main() {
 	f := flags{}
 	arg.MustParse(&f)
-	setupLogging(f)
+	mustSetupLogging(f)
 	log.Debug().Interface("flags", f).Msg("flags")
 
 	log.Info().Msg("loading image..")
