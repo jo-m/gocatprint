@@ -1,8 +1,9 @@
 .PHONY: build run help test format lint check
 
 build:
-	go build -o catprint ./cmd/catprint/main.go
-	go build -o catprintsimple ./cmd/catprintsimple/main.go
+	go build -o catprint ./cmd/catprint/
+	go build -o catprintsimple ./cmd/catprintsimple/
+	go build -o catprintcam ./cmd/catprintcam/
 
 run: build
 	sudo ./catprint \

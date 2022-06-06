@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/alexflint/go-arg v1.4.3
+	github.com/blackjack/webcam v0.0.0-20220329180758-ba064708e165
 	github.com/go-ble/ble v0.0.0-20220207185428-60d1eecf2633
 	github.com/makeworld-the-better-one/dither/v2 v2.2.0
 	github.com/rs/zerolog v1.26.1
