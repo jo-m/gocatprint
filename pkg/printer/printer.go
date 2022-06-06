@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/linux/gatt"
-	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -43,39 +42,25 @@ type Printer struct {
 // Close() after usage.
 func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
 	filter := func(adv ble.Advertisement) bool {
-		logger := log.With().
-			Str("addr", adv.Addr().String()).
-			Int("rssi", adv.RSSI()).
-			Str("name", adv.LocalName()).
-			Logger()
-
-		logger.Debug().Msg("received advertisement")
-
 		if !adv.Connectable() {
-			logger.Trace().Msg("not connectable")
 			return false
 		}
 
 		if opts.Name != "" {
 			if !strings.EqualFold(adv.LocalName(), opts.Name) {
-				logger.Trace().Msg("name mismatch")
 				return false
 			}
 		}
 
 		if opts.Address != "" {
 			if !strings.EqualFold(adv.Addr().String(), opts.Address) {
-				logger.Trace().Msg("address mismatch")
 				return false
 			}
 		}
 
 		for _, s := range adv.Services() {
-			logger.Trace().Str("service", s.String()).Msg("found service")
 
 			if s.Equal(ble.UUID16(printerServiceScanUUID)) {
-				logger.Debug().Msg("found printer advertisement")
-
 				return true
 			}
 		}
@@ -87,8 +72,6 @@ func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	log.Debug().Str("addr", client.Addr().String()).Msg("connected")
 
 	profile, err := client.DiscoverProfile(true)
 	if err != nil {
@@ -119,13 +102,10 @@ func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
 
 // Close closes the connection.
 func (p *Printer) Close() {
-	log.Debug().Msg("Close()")
-
 	p.client.ClearSubscriptions()
 	p.client.CancelConnection()
 
 	<-p.client.Disconnected()
-	log.Debug().Msg("connection closed")
 }
 
 // https://github.com/golang/go/wiki/SliceTricks#batching-with-minimal-allocation
@@ -159,7 +139,6 @@ func (p *Printer) Print(ctx context.Context, img image.Image) error {
 	gattC.Conn().SetContext(ctx)
 
 	for _, b := range chunks {
-		log.Trace().Int("len", len(b)).Msg("writing chunk")
 		err = gattC.WriteCharacteristic(p.printerChar, b, true)
 		if err != nil {
 			return err

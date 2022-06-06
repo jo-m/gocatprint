@@ -13,14 +13,13 @@ import (
 	"github.com/alexflint/go-arg"
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/linux"
+	"github.com/jo-m/gocatprint/internal/pkg/logging"
 	"github.com/jo-m/gocatprint/pkg/printer"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 type flags struct {
-	LogPretty bool   `arg:"--log-pretty" default:"true" help:"log pretty"`
-	LogLevel  string `arg:"--log-level" default:"info" help:"log level" placeholder:"LEVEL"`
+	logging.LogConfig
 
 	HCIDevice      int           `arg:"--hci-device" default:"-1" help:"HCI device to use, auto if negative" placeholder:"N"`
 	Timeout        time.Duration `arg:"--timeout" default:"10s" help:"how long to allow for discovery and printing" placeholder:"DUR"`
@@ -30,19 +29,6 @@ type flags struct {
 	Threshold bool   `arg:"--threshold" default:"false" help:"use simple thresholding instead of dithering"`
 	Preview   string `arg:"--preview" default:"" help:"do not print, just write the (processed) image to the given file" placeholder:"OUT-FILE"`
 	Image     string `arg:"positional,required"  help:"image to print, PNG or JPEG, must be 384px wide (unless --scale is passed)" placeholder:"IN-FILE"`
-}
-
-func mustSetupLogging(f flags) {
-	level, err := zerolog.ParseLevel(f.LogLevel)
-	if err != nil {
-		log.Panic().Err(err).Send()
-	}
-
-	if f.LogPretty {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	}
-
-	log.Logger = log.Logger.Level(level).With().Timestamp().Caller().Logger()
 }
 
 func mustSetDefaultDevice(f flags) {
@@ -105,7 +91,7 @@ func mustLoadImage(path string) image.Image {
 func main() {
 	f := flags{}
 	arg.MustParse(&f)
-	mustSetupLogging(f)
+	logging.MustInit(f.LogConfig)
 	log.Debug().Interface("flags", f).Msg("flags")
 
 	log.Info().Msg("loading image..")
