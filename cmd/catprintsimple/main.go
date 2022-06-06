@@ -5,9 +5,6 @@ import (
 	"image"
 	"os"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
-
 	_ "image/gif"
 	_ "image/jpeg"
 
@@ -22,8 +19,6 @@ Usage:
 func main() {
 	imgPath := flag.String("img", "", "image file to print")
 	flag.Parse()
-
-	log.Logger = log.Logger.Level(zerolog.Disabled)
 
 	file, err := os.Open(*imgPath)
 	if err != nil {
