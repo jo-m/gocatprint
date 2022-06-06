@@ -35,3 +35,22 @@ Options:
 
 $ sudo ./catprint ~/image.png
 ```
+
+## Webcam example
+
+```
+$ make build
+$ ./catprintcam --help
+Usage: catprintcam [--log-pretty] [--log-level LEVEL] [--pic-dev DEV] [--pic-format STR] [--pic-timeout DUR] [--pic-skip-frames N]
+
+Options:
+  --log-pretty           log pretty [default: true, env: LOG_PRETTY]
+  --log-level LEVEL      log level [default: info, env: LOG_LEVEL]
+  --pic-dev DEV          camera video device file path [default: /dev/video2, env: PIC_DEV]
+  --pic-format STR       camera preferred image format [default: Motion-JPEG, env: PIC_FORMAT]
+  --pic-timeout DUR      how long to give camera time to start [default: 2s, env: PIC_TIMEOUT]
+  --pic-skip-frames N    how many frames to skip until picture snap [default: 15, env: PIC_SKIP_FRAMES]
+  --help, -h             display this help and exit
+
+$ sudo ./catprintcam --pic-dev /dev/video0
+```
