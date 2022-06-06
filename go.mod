@@ -7,8 +7,8 @@ require (
 	github.com/go-ble/ble v0.0.0-20220207185428-60d1eecf2633
 	github.com/makeworld-the-better-one/dither/v2 v2.2.0
 	github.com/rs/zerolog v1.26.1
-	github.com/stretchr/testify v1.7.1
-	golang.org/x/image v0.0.0-20220413100746-70e8d0d3baa9
+	github.com/stretchr/testify v1.7.2
+	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 )
 
 require (
@@ -23,5 +23,5 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
-	gopkg.in/yaml.v3 v3.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
