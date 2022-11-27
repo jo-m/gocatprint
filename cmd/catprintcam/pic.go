@@ -8,7 +8,7 @@ import (
 	"image/jpeg"
 	"time"
 
-	"github.com/blackjack/webcam"
+	"github.com/aamcrae/webcam"
 )
 
 type CamConfig struct {
@@ -65,7 +65,7 @@ func Snap(config CamConfig) (image.Image, error) {
 		return nil, err
 	}
 
-	f, w, h, err := cam.SetImageFormat(format, uint32(size.MaxWidth), uint32(size.MaxHeight))
+	f, w, h, _, _, err := cam.SetImageFormat(format, uint32(size.MaxWidth), uint32(size.MaxHeight))
 	if err != nil {
 		return nil, err
 	}
