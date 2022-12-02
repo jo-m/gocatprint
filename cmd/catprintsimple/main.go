@@ -1,3 +1,12 @@
+/*
+Package main (catprint) is a CLI utility to print an image file,
+showcasing the catprint simple API.
+The image is automatically dithered.
+
+Usage:
+
+	sudo ./catprintsimple -img pkg/printer/testdata/swan.jpg
+*/
 package main
 
 import (
@@ -10,11 +19,6 @@ import (
 
 	"github.com/jo-m/gocatprint/pkg/simple"
 )
-
-/*
-Usage:
-	./catprintsimple -img pkg/printer/testdata/swan.jpg
-*/
 
 func main() {
 	imgPath := flag.String("img", "", "image file to print")

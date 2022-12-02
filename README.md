@@ -9,9 +9,11 @@ Install it via `go install github.com/jo-m/gocatprint/cmd/catprint@latest`.
 
 There is a simple API in `pkg/simple` and a more advanced one in `pkg/printer`.
 
+See the binaries in `cmd/` for usage.
+
 Ported to Go from <https://github.com/rbaron/catprinter>.
 
-Needs root to run, there is probably a way to fix this via Linux system permissions.
+Needs root to run (for Bluetooth), there is probably a way to fix this via Linux system permissions.
 
 ```
 $ make build

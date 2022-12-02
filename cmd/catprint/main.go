@@ -1,3 +1,13 @@
+/*
+Package main (catprint) is a CLI utility to print an image file,
+showcasing the catprint advanced API.
+It supports dithering and thresholding.
+
+Usage:
+
+	sudo ./catprint ~/image.png
+	./catprint --help
+*/
 package main
 
 import (

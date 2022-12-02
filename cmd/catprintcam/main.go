@@ -1,3 +1,13 @@
+/*
+Package main (catprintcamp) is a CLI utility to grab a picture from a webcam and print it,
+showcasing the simple API.
+Pictures are automatically dithered.
+
+Usage:
+
+	sudo ./catprintcam --pic-dev /dev/video0
+	./catprintcam --help
+*/
 package main
 
 import (
