@@ -25,7 +25,6 @@ test:
 
 lint:
 	gofmt -l .; test -z "$$(gofmt -l .)"
-	find . \( -name '*.c' -or -name '*.h' \) -exec clang-format-10 --style=file --dry-run --Werror {} +
 	go vet ./...
 	go run honnef.co/go/tools/cmd/staticcheck@latest -checks all,-ST1000 ./...
 	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
@@ -34,4 +33,3 @@ check: lint test
 
 format:
 	gofmt -w -s .
-	find . \( -name '*.c' -or -name '*.h' \) -exec clang-format-10 --style=file -i {} +
