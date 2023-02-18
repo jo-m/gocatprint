@@ -75,19 +75,19 @@ func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
 
 	profile, err := client.DiscoverProfile(true)
 	if err != nil {
-		client.CancelConnection()
+		_ = client.CancelConnection()
 		return nil, err
 	}
 
 	printerSvc := profile.FindService(ble.NewService(ble.UUID16(printerServiceUUID)))
 	if printerSvc == nil {
-		client.CancelConnection()
+		_ = client.CancelConnection()
 		return nil, errors.New("printer service not found")
 	}
 
 	printerChar := profile.FindCharacteristic(ble.NewCharacteristic(ble.UUID16(printerCharacteristicUUID)))
 	if printerChar == nil {
-		client.CancelConnection()
+		_ = client.CancelConnection()
 		return nil, errors.New("printer characteristic not found")
 	}
 
@@ -102,8 +102,8 @@ func Find(ctx context.Context, opts FindOptions) (*Printer, error) {
 
 // Close closes the connection.
 func (p *Printer) Close() {
-	p.client.ClearSubscriptions()
-	p.client.CancelConnection()
+	_ = p.client.ClearSubscriptions()
+	_ = p.client.CancelConnection()
 
 	<-p.client.Disconnected()
 }

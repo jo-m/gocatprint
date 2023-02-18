@@ -54,14 +54,14 @@ func byteEncode(row []bool) []int8 {
 	bitEncode := func(chunkStart, bitIx int) int8 {
 		if row[chunkStart+bitIx] {
 			return 1 << bitIx
-		} else {
-			return 0
 		}
+
+		return 0
 	}
 
 	ret := []int8{}
 	for chunkStart := 0; chunkStart < len(row); chunkStart += 8 {
-		var b int8 = 0
+		var b int8
 		for bitIx := 0; bitIx < 8; bitIx++ {
 			b |= bitEncode(chunkStart, bitIx)
 		}

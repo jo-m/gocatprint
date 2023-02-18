@@ -11,6 +11,7 @@ import (
 	"github.com/aamcrae/webcam"
 )
 
+// CamConfig is the v4l camera config. It contains struct tags compatible with github.com/alexflint/go-arg.
 type CamConfig struct {
 	PicDev string `arg:"env:PIC_DEV,--pic-dev" default:"/dev/video2" help:"camera video device file path" placeholder:"DEV"`
 	// v4l2-ctl --list-formats-ext --device /dev/video2
@@ -21,7 +22,7 @@ type CamConfig struct {
 
 func chooseFormat(cam *webcam.Webcam, preferred string) (webcam.PixelFormat, string, *webcam.FrameSize, error) {
 	fmap := cam.GetSupportedFormats()
-	var format webcam.PixelFormat = 0
+	var format webcam.PixelFormat
 	var formatStr string
 	for f, s := range fmap {
 		format = f

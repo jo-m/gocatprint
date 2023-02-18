@@ -8,11 +8,13 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// LogConfig is the logging configuration. It contains struct tags compatible with github.com/alexflint/go-arg.
 type LogConfig struct {
 	LogPretty bool   `arg:"--log-pretty,env:LOG_PRETTY" default:"true" help:"log pretty"`
 	LogLevel  string `arg:"--log-level,env:LOG_LEVEL" default:"info" help:"log level" placeholder:"LEVEL"`
 }
 
+// MustInit initializes the logging system and panics if that fails.
 func MustInit(config LogConfig) {
 	level, err := zerolog.ParseLevel(config.LogLevel)
 	if err != nil {
