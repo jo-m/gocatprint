@@ -4,12 +4,12 @@ go 1.20
 
 require (
 	github.com/aamcrae/webcam v0.0.0-20210915060337-934acc13bdc3
-	github.com/alexflint/go-arg v1.5.0
+	github.com/alexflint/go-arg v1.5.1
 	github.com/go-ble/ble v0.0.0-20240122180141-8c5522f54333
 	github.com/makeworld-the-better-one/dither/v2 v2.4.0
 	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/image v0.16.0
+	golang.org/x/image v0.20.0
 )
 
 require (
@@ -22,7 +22,7 @@ require (
 	github.com/mgutz/logxi v0.0.0-20161027140823-aebf8a7d67ab // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
