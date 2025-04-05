@@ -5,7 +5,7 @@
 Go library to print images on cheap thermo paper printers from Aliexpress.
 A CLI tool `catprint` is available as well.
 
-Install it via `go install github.com/jo-m/gocatprint/cmd/catprint@latest`.
+Install it via `go install jo-m.ch/go/gocatprint/cmd/catprint@latest`.
 
 There is a simple API in `pkg/simple` and a more advanced one in `pkg/printer`.
 
