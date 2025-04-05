@@ -15,9 +15,9 @@ import (
 	_ "image/jpeg"
 
 	"github.com/alexflint/go-arg"
-	"github.com/jo-m/gocatprint/internal/pkg/logging"
-	"github.com/jo-m/gocatprint/pkg/simple"
 	"github.com/rs/zerolog/log"
+	"jo-m.ch/go/gocatprint/internal/pkg/logging"
+	"jo-m.ch/go/gocatprint/pkg/simple"
 )
 
 type flags struct {

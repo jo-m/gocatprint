@@ -12,12 +12,11 @@ package main
 import (
 	"flag"
 	"image"
-	"os"
-
 	_ "image/gif"
 	_ "image/jpeg"
+	"os"
 
-	"github.com/jo-m/gocatprint/pkg/simple"
+	"jo-m.ch/go/gocatprint/pkg/simple"
 )
 
 func main() {

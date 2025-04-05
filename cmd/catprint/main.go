@@ -13,19 +13,18 @@ package main
 import (
 	"context"
 	"image"
+	_ "image/gif"
+	_ "image/jpeg"
 	"image/png"
 	"os"
 	"time"
 
-	_ "image/gif"
-	_ "image/jpeg"
-
 	"github.com/alexflint/go-arg"
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/linux"
-	"github.com/jo-m/gocatprint/internal/pkg/logging"
-	"github.com/jo-m/gocatprint/pkg/printer"
 	"github.com/rs/zerolog/log"
+	"jo-m.ch/go/gocatprint/internal/pkg/logging"
+	"jo-m.ch/go/gocatprint/pkg/printer"
 )
 
 type flags struct {
